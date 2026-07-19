@@ -63,12 +63,13 @@ Install **one** primary backend:
 
 | Plugin | Purpose | Status |
 |--------|---------|--------|
-| `foundry-agent` | Cast/Anvil agent runtime + safety | Shipping |
-| `defi-primitives` | ERC20, approvals, WETH, units | Planned |
-| `permit2-ops` | Permit2 agent runbooks | Planned |
-| `*-ops` | Protocol interaction (Aave, Uni, Balancer, Aerodrome) | Planned |
-| `indexedex-ops` | IndexedEx flagship agent flows | Planned |
-| `bankr-ops` | Optional Bankr execution backend | Planned |
+| `foundry-agent` | Cast/Anvil agent runtime + safety | **Shipping** |
+| `bankr-ops` | Optional Bankr wallet execution backend | **Shipping** |
+| `defi-primitives` | ERC20, approvals, WETH, units | **Shipping** |
+| `permit2-ops` | Permit2 allowance cast runbooks | **Shipping** |
+| `balancer-v3-ops` | Balancer V3 vault/router cast | **Shipping** |
+| `indexedex-ops` | IndexedEx flagship agent flows | **Shipping** |
+
 
 ## Structure
 

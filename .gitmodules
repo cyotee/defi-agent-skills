@@ -1,3 +1,18 @@
 [submodule "plugins/foundry-agent"]
 	path = plugins/foundry-agent
 	url = https://github.com/cyotee/foundry-agent-skills.git
+[submodule "plugins/defi-primitives"]
+	path = plugins/defi-primitives
+	url = https://github.com/cyotee/defi-primitives-ops.git
+[submodule "plugins/permit2-ops"]
+	path = plugins/permit2-ops
+	url = https://github.com/cyotee/permit2-ops.git
+[submodule "plugins/balancer-v3-ops"]
+	path = plugins/balancer-v3-ops
+	url = https://github.com/cyotee/balancer-v3-ops.git
+[submodule "plugins/bankr-ops"]
+	path = plugins/bankr-ops
+	url = https://github.com/cyotee/bankr-ops.git
+[submodule "plugins/indexedex-ops"]
+	path = plugins/indexedex-ops
+	url = https://github.com/cyotee/indexedex-ops.git

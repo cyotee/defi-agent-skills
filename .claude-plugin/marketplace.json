@@ -4,8 +4,8 @@
     "name": "cyotee"
   },
   "metadata": {
-    "description": "Curated AI-agent marketplace for DeFi on-chain interaction \u2014 Foundry cast/forge backends and protocol *-ops skills (not architecture/dev test dumps)",
-    "version": "0.2.0"
+    "description": "Curated AI-agent marketplace for DeFi on-chain interaction \u2014 Foundry/Bankr backends and protocol *-ops skills (not architecture/dev test dumps)",
+    "version": "1.0.0"
   },
   "plugins": [
     {
@@ -28,6 +28,104 @@
         "rpc",
         "agent",
         "evm"
+      ]
+    },
+    {
+      "name": "bankr-ops",
+      "source": {
+        "source": "github",
+        "repo": "cyotee/bankr-ops"
+      },
+      "description": "Thin Bankr wallet API execution backend (auth, portfolio, sign/submit) \u2014 optional alternative to foundry-agent",
+      "version": "0.1.0",
+      "author": {
+        "name": "cyotee"
+      },
+      "category": "development",
+      "tags": [
+        "bankr",
+        "wallet",
+        "agent",
+        "backend"
+      ]
+    },
+    {
+      "name": "defi-primitives",
+      "source": {
+        "source": "github",
+        "repo": "cyotee/defi-primitives-ops"
+      },
+      "description": "ERC20, WETH, approvals, and unit conversion cast runbooks for AI agents",
+      "version": "0.1.0",
+      "author": {
+        "name": "cyotee"
+      },
+      "category": "defi",
+      "tags": [
+        "erc20",
+        "weth",
+        "approvals",
+        "cast",
+        "agent"
+      ]
+    },
+    {
+      "name": "permit2-ops",
+      "source": {
+        "source": "github",
+        "repo": "cyotee/permit2-ops"
+      },
+      "description": "Permit2 allowance cast runbooks for AI agents",
+      "version": "0.1.0",
+      "author": {
+        "name": "cyotee"
+      },
+      "category": "defi",
+      "tags": [
+        "permit2",
+        "approvals",
+        "cast",
+        "agent"
+      ]
+    },
+    {
+      "name": "balancer-v3-ops",
+      "source": {
+        "source": "github",
+        "repo": "cyotee/balancer-v3-ops"
+      },
+      "description": "Balancer V3 agent cast runbooks for vault reads and router ops",
+      "version": "0.1.0",
+      "author": {
+        "name": "cyotee"
+      },
+      "category": "defi",
+      "tags": [
+        "balancer",
+        "v3",
+        "swap",
+        "cast",
+        "agent"
+      ]
+    },
+    {
+      "name": "indexedex-ops",
+      "source": {
+        "source": "github",
+        "repo": "cyotee/indexedex-ops"
+      },
+      "description": "IndexedEx agent cast runbooks: registry discovery, Standard Exchange, DETF, Balancer SE router",
+      "version": "0.1.0",
+      "author": {
+        "name": "cyotee"
+      },
+      "category": "defi",
+      "tags": [
+        "indexedex",
+        "detf",
+        "vault",
+        "cast",
+        "agent"
       ]
     }
   ]

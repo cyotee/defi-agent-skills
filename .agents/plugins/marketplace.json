@@ -2,11 +2,11 @@
   "name": "defi-agent-skills",
   "interface": {
     "displayName": "cyotee",
-    "shortDescription": "Curated AI-agent marketplace for DeFi on-chain interaction — Foundry cast/forge backends and protocol *-ops skills (not architecture/dev test dumps)"
+    "shortDescription": "Curated AI-agent marketplace for DeFi on-chain interaction — Foundry/Bankr backends and protocol *-ops skills (not architecture/dev test dumps)"
   },
   "metadata": {
-    "description": "Curated AI-agent marketplace for DeFi on-chain interaction — Foundry cast/forge backends and protocol *-ops skills (not architecture/dev test dumps)",
-    "version": "0.2.0",
+    "description": "Curated AI-agent marketplace for DeFi on-chain interaction — Foundry/Bankr backends and protocol *-ops skills (not architecture/dev test dumps)",
+    "version": "1.0.0",
     "generatedFrom": ".claude-plugin/marketplace.json",
     "generator": "scripts/generate-codex-marketplace.py",
     "notes": "Claude Code is the source of truth. Skills (SKILL.md) are portable. Hooks and Claude-specific automation may not fully apply on Codex."
@@ -24,6 +24,91 @@
       },
       "category": "Development",
       "description": "Foundry cast/anvil runtime for AI agents: RPC reads/writes, fork rehearsal, multi-step forge scripts, and safety gates",
+      "version": "0.1.0",
+      "author": {
+        "name": "cyotee"
+      }
+    },
+    {
+      "name": "bankr-ops",
+      "source": {
+        "source": "local",
+        "path": "./plugins/bankr-ops"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Development",
+      "description": "Thin Bankr wallet API execution backend (auth, portfolio, sign/submit) — optional alternative to foundry-agent",
+      "version": "0.1.0",
+      "author": {
+        "name": "cyotee"
+      }
+    },
+    {
+      "name": "defi-primitives",
+      "source": {
+        "source": "local",
+        "path": "./plugins/defi-primitives"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Defi",
+      "description": "ERC20, WETH, approvals, and unit conversion cast runbooks for AI agents",
+      "version": "0.1.0",
+      "author": {
+        "name": "cyotee"
+      }
+    },
+    {
+      "name": "permit2-ops",
+      "source": {
+        "source": "local",
+        "path": "./plugins/permit2-ops"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Defi",
+      "description": "Permit2 allowance cast runbooks for AI agents",
+      "version": "0.1.0",
+      "author": {
+        "name": "cyotee"
+      }
+    },
+    {
+      "name": "balancer-v3-ops",
+      "source": {
+        "source": "local",
+        "path": "./plugins/balancer-v3-ops"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Defi",
+      "description": "Balancer V3 agent cast runbooks for vault reads and router ops",
+      "version": "0.1.0",
+      "author": {
+        "name": "cyotee"
+      }
+    },
+    {
+      "name": "indexedex-ops",
+      "source": {
+        "source": "local",
+        "path": "./plugins/indexedex-ops"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Defi",
+      "description": "IndexedEx agent cast runbooks: registry discovery, Standard Exchange, DETF, Balancer SE router",
       "version": "0.1.0",
       "author": {
         "name": "cyotee"
