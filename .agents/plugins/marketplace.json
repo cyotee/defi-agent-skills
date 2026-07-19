@@ -1,0 +1,33 @@
+{
+  "name": "defi-agent-skills",
+  "interface": {
+    "displayName": "cyotee",
+    "shortDescription": "Curated AI-agent marketplace for DeFi on-chain interaction — Foundry cast/forge backends and protocol *-ops skills (not architecture/dev test dumps)"
+  },
+  "metadata": {
+    "description": "Curated AI-agent marketplace for DeFi on-chain interaction — Foundry cast/forge backends and protocol *-ops skills (not architecture/dev test dumps)",
+    "version": "0.2.0",
+    "generatedFrom": ".claude-plugin/marketplace.json",
+    "generator": "scripts/generate-codex-marketplace.py",
+    "notes": "Claude Code is the source of truth. Skills (SKILL.md) are portable. Hooks and Claude-specific automation may not fully apply on Codex."
+  },
+  "plugins": [
+    {
+      "name": "foundry-agent",
+      "source": {
+        "source": "local",
+        "path": "./plugins/foundry-agent"
+      },
+      "policy": {
+        "installation": "AVAILABLE",
+        "authentication": "ON_INSTALL"
+      },
+      "category": "Development",
+      "description": "Foundry cast/anvil runtime for AI agents: RPC reads/writes, fork rehearsal, multi-step forge scripts, and safety gates",
+      "version": "0.1.0",
+      "author": {
+        "name": "cyotee"
+      }
+    }
+  ]
+}
