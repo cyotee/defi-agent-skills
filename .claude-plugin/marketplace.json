@@ -1,0 +1,11 @@
+{
+  "name": "defi-agent-skills",
+  "owner": {
+    "name": "cyotee"
+  },
+  "metadata": {
+    "description": "Agent Skills marketplace for DeFi protocol interaction — skills for AI agents to use Indexedex and other DeFi protocols",
+    "version": "0.1.0"
+  },
+  "plugins": []
+}
