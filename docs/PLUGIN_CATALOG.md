@@ -19,7 +19,7 @@
 
 | Plugin path | Remote | Status |
 |-------------|--------|--------|
-| `foundry-agent` | `cyotee/foundry-agent-skills` | P0 |
+| `foundry-agent` | `cyotee/foundry-agent-skills` | **Shipping** |
 | `bankr-ops` | `cyotee/bankr-ops` | Planned (optional backend) |
 | `defi-primitives` | `cyotee/defi-primitives-ops` | Planned |
 | `permit2-ops` | `cyotee/permit2-ops` | Planned |
