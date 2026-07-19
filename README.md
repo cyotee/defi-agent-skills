@@ -1,8 +1,15 @@
 # defi-agent-skills
 
-Agent Skills marketplace for **DeFi protocol interaction** — portable skills so AI agents (Claude Code, Codex, Grok, OpenCode, and others) can discover and use DeFi protocols correctly.
+**AI-agent marketplace** for **DeFi protocol interaction** — curated so agents only load skills needed to operate on-chain, not architecture or test-framework noise.
 
-Built for agent-first onboarding: install the marketplace, load protocol skills, then interact with contracts and flows without reverse-engineering docs from scratch.
+Plugins are **git submodules** of independent repos (shared SoT with other marketplaces; pins may drift intentionally).
+
+## Who should use this
+
+| Audience | Marketplace |
+|----------|-------------|
+| Agents calling DeFi / RPCs | **This repo** |
+| Developers writing/testing contracts | [cyotee-claude-plugins](https://github.com/cyotee/cyotee-claude-plugins) |
 
 ## Installation
 
@@ -10,7 +17,7 @@ Built for agent-first onboarding: install the marketplace, load protocol skills,
 
 ```bash
 /plugin marketplace add cyotee/defi-agent-skills
-/plugin
+/plugin install foundry-agent@defi-agent-skills
 ```
 
 ### Grok Build
@@ -19,41 +26,64 @@ Built for agent-first onboarding: install the marketplace, load protocol skills,
 grok plugin marketplace add cyotee/defi-agent-skills
 ```
 
-### Local clone
+### Codex CLI
 
 ```bash
-git clone https://github.com/cyotee/defi-agent-skills.git
-# then add the local path as a marketplace in your agent harness
+git clone --recurse-submodules https://github.com/cyotee/defi-agent-skills.git
+cd defi-agent-skills
+codex plugin marketplace add .
+# or: codex plugin marketplace add cyotee/defi-agent-skills
 ```
+
+Regenerate Codex artifacts after catalog edits:
+
+```bash
+python3 scripts/generate-codex-marketplace.py
+python3 scripts/generate-codex-marketplace.py --check
+```
+
+### OpenCode
+
+```bash
+git clone --recurse-submodules https://github.com/cyotee/defi-agent-skills.git
+cd defi-agent-skills
+./install-opencode.sh   # when present; or install skills via OpenCode plugin bridge
+```
+
+## Execution backends
+
+Install **one** primary backend:
+
+| Plugin | Tool |
+|--------|------|
+| `foundry-agent` | `cast` / `forge script` / Anvil forks |
+| `bankr-ops` | Bankr wallet API (optional, separate plugin) |
+
+## Plugins
+
+| Plugin | Purpose | Status |
+|--------|---------|--------|
+| `foundry-agent` | Cast/Anvil agent runtime + safety | Shipping |
+| `defi-primitives` | ERC20, approvals, WETH, units | Planned |
+| `permit2-ops` | Permit2 agent runbooks | Planned |
+| `*-ops` | Protocol interaction (Aave, Uni, Balancer, Aerodrome) | Planned |
+| `indexedex-ops` | IndexedEx flagship agent flows | Planned |
+| `bankr-ops` | Optional Bankr execution backend | Planned |
 
 ## Structure
 
-Follows the [Agent Skills](https://agentskills.io) / Claude plugin marketplace layout:
-
 ```text
-.claude-plugin/
-  marketplace.json          # Catalog (source of truth)
-plugins/
-  <protocol>/
-    .claude-plugin/plugin.json
-    README.md
-    skills/
-      <skill-name>/
-        SKILL.md
+.claude-plugin/marketplace.json   # Claude catalog (SoT)
+.agents/plugins/marketplace.json  # Codex catalog (generated)
+plugins/                          # git submodules
+docs/PLUGIN_CATALOG.md
+AGENTS.md
 ```
-
-## Protocols
-
-Skills will be added per protocol. First target:
-
-| Plugin | Protocol | Status |
-|--------|----------|--------|
-| `indexedex` | Indexedex (daosys) | Planned |
 
 ## Related
 
-- Development monorepo submodule host: [projects-defi](https://github.com/cyotee/projects-defi) (if public)
-- General workflow plugins: [cyotee-claude-plugins](https://github.com/cyotee/cyotee-claude-plugins)
+- Plan: [docs/superpowers/plans/2026-07-18-defi-agent-skills-marketplace.md](docs/superpowers/plans/2026-07-18-defi-agent-skills-marketplace.md)
+- Developer marketplace: [cyotee-claude-plugins](https://github.com/cyotee/cyotee-claude-plugins)
 
 ## License
 
