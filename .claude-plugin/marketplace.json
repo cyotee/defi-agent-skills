@@ -4,8 +4,31 @@
     "name": "cyotee"
   },
   "metadata": {
-    "description": "Agent Skills marketplace for DeFi protocol interaction — skills for AI agents to use Indexedex and other DeFi protocols",
-    "version": "0.1.0"
+    "description": "Curated AI-agent marketplace for DeFi on-chain interaction \u2014 Foundry cast/forge backends and protocol *-ops skills (not architecture/dev test dumps)",
+    "version": "0.2.0"
   },
-  "plugins": []
+  "plugins": [
+    {
+      "name": "foundry-agent",
+      "source": {
+        "source": "github",
+        "repo": "cyotee/foundry-agent-skills"
+      },
+      "description": "Foundry cast/anvil runtime for AI agents: RPC reads/writes, fork rehearsal, multi-step forge scripts, and safety gates",
+      "version": "0.1.0",
+      "author": {
+        "name": "cyotee"
+      },
+      "category": "development",
+      "tags": [
+        "foundry",
+        "cast",
+        "forge",
+        "anvil",
+        "rpc",
+        "agent",
+        "evm"
+      ]
+    }
+  ]
 }

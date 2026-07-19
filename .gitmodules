@@ -1,0 +1,3 @@
+[submodule "plugins/foundry-agent"]
+	path = plugins/foundry-agent
+	url = https://github.com/cyotee/foundry-agent-skills.git
