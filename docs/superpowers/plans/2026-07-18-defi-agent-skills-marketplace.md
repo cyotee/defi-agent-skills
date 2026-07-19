@@ -2,23 +2,36 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Build `cyotee/defi-agent-skills` as a **curated AI-agent marketplace**: only skills needed to **interact with DeFi on-chain** (Foundry `cast` / `forge script` as the RPC/tx toolkit), composed primarily as **git submodules** of shared plugin repos so all marketplaces share one source of truth (with intentional drift allowed later).
+**Goal:** Build `cyotee/defi-agent-skills` as a **curated AI-agent marketplace**: only skills needed to **interact with DeFi on-chain**, composed primarily as **git submodules** of shared plugin repos so all marketplaces share one source of truth (with intentional drift allowed later).
 
 **Architecture:** Catalog-of-submodules. Plugins live in independent GitHub repos; marketplaces only pin versions via `.gitmodules` + `.claude-plugin/marketplace.json`. This marketplace **must not** install architecture/dev/test skills that force agents to filter noise. If a plugin mixes **development** knowledge with **interaction** knowledge, **split it** into separate repos and update **both** `cyotee-claude-plugins` and `defi-agent-skills`.
 
-**Tech Stack:** Agent Skills (`SKILL.md`), Claude plugin marketplace format, git submodules, Foundry (`cast`, `forge`, `anvil`), deployment address JSON from IndexedEx.
+**Tech Stack:** Agent Skills (`SKILL.md`), Claude plugin marketplace + Codex dual-ship + OpenCode bridge (full multi-harness), git submodules, Foundry (`cast`/`forge`/`anvil`) and other **execution backends as separate plugins**, deployment address JSON from IndexedEx.
+
+## Locked decisions (from requirements review)
+
+| Topic | Decision |
+|-------|----------|
+| **foundry-agent placement** | List in **both** `cyotee-claude-plugins` and `defi-agent-skills`. Slim `foundry-skills` to pure test/deploy/project. |
+| **Repo / plugin naming** | **`{protocol}-ops`** pattern: `aave-v3-ops`, `permit2-ops`, `balancer-v3-ops`, `indexedex-ops`, etc. Architecture stays `*-skill`. |
+| **Chains / writes** | Include **mainnet / Base mainnet** recipes **when addresses exist**; still require explicit confirmation on every write. Testnet tables required for rehearsal. |
+| **Multi-harness** | **Claude, Grok, OpenCode, and Codex** all supported at launch (marketplace.json SoT + Codex generator + OpenCode install/bridge, following `cyotee-claude-plugins`). |
+| **Execution backends** | **Split by tool** so agents only load the backend they use for RPCs/txs. e.g. `foundry-agent` (cast/forge) vs `bankr-ops` (Bankr wallet/API) as **separate plugins** — not one skill that teaches both. Protocol `*-ops` skills should be backend-agnostic where possible (function selectors, params, safety) and **delegate execution** to the installed backend plugin; or provide backend-specific sections only when necessary, without requiring Bankr if using Foundry. |
 
 ## Global Constraints
 
 - **Agent-only catalog:** `defi-agent-skills` lists only plugins whose skills help an agent **discover, read, quote, approve, execute, and verify** DeFi actions. No Crane style guides, no forge-fuzz suites, no architecture-only dumps, no Playwright/Synpress, no boardgame, etc.
 - **Submodule SoT:** Prefer `git submodule add https://github.com/cyotee/<plugin-repo>.git plugins/<name>`. Do **not** copy-paste skill trees into this repo. Local `plugins/*` only for marketplace-native glue that has no shared repo yet (then extract when stable).
 - **Drift is allowed later:** Submodule pins are intentional versions. A marketplace may later fork or pin a divergent commit; document why in the marketplace README if so.
-- **Split on mingle:** If one repo serves both “how to implement/test this” and “how to call this on-chain,” split into `*-skill` (or keep existing name for **dev/architecture**) vs `*-ops` / `*-agent` (interaction). Update `.gitmodules` + marketplace.json in **every** marketplace that consumed the old combined repo.
-- **Operational skill bar:** Runbooks with exact CLI, addresses from tables, safety gates — not full protocol source dumps.
-- **Foundry-first RPC:** `cast call` / `cast send` default; `forge script` for multi-step; Anvil fork for rehearsal.
-- **No address hallucination:** Refuse if address book / registry cannot resolve.
-- **Cross-link, don’t rehost architecture:** Point to `cyotee-claude-plugins` (or the architecture plugin repo) for internals; this marketplace stays thin and actionable.
-- **Naming:** `*-ops` or `*-agent` for interaction plugins; keep existing `*-skill` names for architecture/dev packages.
+- **Split on mingle:** If one repo serves both “how to implement/test this” and “how to call this on-chain,” split into `*-skill` (dev/architecture) vs `*-ops` (interaction). Update `.gitmodules` + marketplace.json in **every** marketplace that consumed the old combined repo.
+- **Operational skill bar:** Runbooks with exact CLI/API, addresses from tables, safety gates — not full protocol source dumps.
+- **Execution backends are separate plugins:** Agents install `foundry-agent` **or** `bankr-ops` (etc.), not a combined mega-runtime. Protocol ops must not force loading unused backends.
+- **Default recipes use Foundry** when illustrating `*-ops` (widely available CLI); Bankr variants live under `bankr-ops` or thin “execute via Bankr submit” references, not mixed into every skill body as required reading.
+- **No address hallucination:** Refuse if address book / registry cannot resolve. Prefer live deployment artifacts; document mainnet only when real addresses are known.
+- **Write safety:** Every state-changing path requires explicit user confirmation (all networks, including mainnet).
+- **Cross-link, don’t rehost architecture:** Point to architecture `*-skill` repos for internals; this marketplace stays thin and actionable.
+- **Naming:** interaction plugins use **`{name}-ops`**; architecture/dev keep existing `*-skill` names. Foundry agent package: plugin id `foundry-agent`, repo `foundry-agent-skills` (or `foundry-ops` — prefer `foundry-agent` to avoid confusion with forge-the-binary).
+- **Multi-harness at launch:** Claude catalog SoT; generate Codex dual-ship; OpenCode bridge/install path (reuse patterns from `cyotee-claude-plugins`).
 
 ---
 
@@ -67,7 +80,7 @@ Permit2 plugin: SDK, wagmi, Solidity contract patterns → **integration/dev**, 
                                 │ (pins may differ)
 ┌───────────────────────────────┴──────────────────────────────┐
 │ defi-agent-skills  (AI agents interacting with DeFi)         │
-│  foundry-agent (cast runtime), *-ops, indexedex-agent…       │
+│  foundry-agent / bankr-ops (backends), *-ops, indexedex-ops  │
 │  NO architecture dumps, NO test frameworks as product skills │
 └──────────────────────────────────────────────────────────────┘
 ```
@@ -155,9 +168,7 @@ Keep as-is in `cyotee-claude-plugins` only:
 4. Update **`cyotee-claude-plugins`**:
    - Keep submodule `plugins/foundry` → `foundry-skills` (dev).
    - **Add** submodule `plugins/foundry-agent` → `foundry-agent-skills` **if** developers should also install cast agent skills from the big marketplace — **OR** only list foundry-agent in `defi-agent-skills` and leave a README link from foundry-skills (“for agent cast runtime see …”).
-5. **Recommendation:** Ship `foundry-agent` in **both** marketplaces (devs need cast too), but **remove** cast/anvil from the fat `foundry-skills` package so the fat package is pure dev again. That avoids duplicate SoT for cast-commands.
-
-**If both marketplaces need cast:** single SoT repo `foundry-agent-skills` submodule’d in both. Do **not** keep two copies of `cast-commands`.
+5. **Locked:** Ship `foundry-agent` in **both** marketplaces. **Remove** cast/anvil from fat `foundry-skills` so it is pure dev. Single SoT repo submodule’d in both — **no** duplicate `cast-commands`.
 
 ### Not split, not agent: local `permit2` package
 
@@ -166,13 +177,13 @@ Keep as-is in `cyotee-claude-plugins` only:
 
 ### New product: IndexedEx agent plugin
 
-- Create **`cyotee/indexedex-agent-skills`** (or `indexedex-ops`) as independent repo.
+- Create **`cyotee/indexedex-ops`** as independent repo.
 - Submodule only into `defi-agent-skills` for launch; optionally also into `cyotee-claude-plugins` later if desired (not required for uncluttered agent UX).
 - Do **not** publish IndexedEx testing/crane skills into the agent marketplace.
 
 ### New primitives repo
 
-- Create **`cyotee/defi-primitives-skills`**: ERC20, WETH, approvals, units, agent confirmation patterns for token ops.
+- Create **`cyotee/defi-primitives-ops`**: ERC20, WETH, approvals, units, agent confirmation patterns for token ops.
 - Submodule into `defi-agent-skills` (primary); optional in developer marketplace.
 
 ---
@@ -198,16 +209,17 @@ Each interaction `SKILL.md` must include:
 
 | Plugin (path) | Remote repo | Origin |
 |---------------|-------------|--------|
-| `foundry-agent` | `cyotee/foundry-agent-skills` | **Split** from `foundry-skills` |
-| `defi-primitives` | `cyotee/defi-primitives-skills` | **New** |
+| `foundry-agent` | `cyotee/foundry-agent-skills` | **Split** from `foundry-skills` (both marketplaces) |
+| `bankr-ops` | `cyotee/bankr-ops` (or extract from Bankr pack) | **New/thin** — Bankr wallet/API execution backend only; optional install |
+| `defi-primitives` | `cyotee/defi-primitives-ops` | **New** |
 | `permit2-ops` | `cyotee/permit2-ops` | **New** |
 | `aave-v3-ops` | `cyotee/aave-v3-ops` | **New** (architecture stays `aave-v3-skill`) |
 | `uniswap-v3-ops` | `cyotee/uniswap-v3-ops` | **New** |
 | `balancer-v3-ops` | `cyotee/balancer-v3-ops` | **New** |
 | `aerodrome-ops` | `cyotee/aerodrome-ops` | **New** |
-| `indexedex` | `cyotee/indexedex-agent-skills` | **New** flagship |
+| `indexedex-ops` | `cyotee/indexedex-ops` | **New** flagship |
 
-**Explicitly excluded from this marketplace:** architecture protocol skills, crane, forge-testing/fuzz, playwright/synpress/metamask/defi-ui-testing, boardgame, homunculus, qmd, voltaire (unless a pure agent-ops subset is split later), wagmi/tevm.
+**Explicitly excluded from this marketplace:** architecture protocol skills, crane, forge-testing/fuzz, playwright/synpress/metamask/defi-ui-testing, boardgame, homunculus, qmd, voltaire (unless a pure agent-ops subset is split later), wagmi/tevm, full Bankr skill pack (games/trading bloat).
 
 ---
 
@@ -326,7 +338,7 @@ For each new repo, same recipe:
 
 | Order | Repo | Why |
 |-------|------|-----|
-| 2a | `defi-primitives-skills` | ERC20 / approve / WETH / units |
+| 2a | `defi-primitives-ops` | ERC20 / approve / WETH / units |
 | 2b | `permit2-ops` | IndexedEx / Balancer routers |
 | 2c | `balancer-v3-ops` | IndexedEx SE + DETF reserve |
 | 2d | `aave-v3-ops` | Canonical agent demo |
@@ -350,17 +362,33 @@ Example for primitives:
 
 ```bash
 cd defi-agent-skills
-git submodule add https://github.com/cyotee/defi-primitives-skills.git plugins/defi-primitives
+git submodule add https://github.com/cyotee/defi-primitives-ops.git plugins/defi-primitives
 # edit marketplace.json
 git add .gitmodules plugins/defi-primitives .claude-plugin/marketplace.json
-git commit -m "feat: add defi-primitives skills as submodule"
+git commit -m "feat: add defi-primitives-ops as submodule"
 ```
 
 ---
 
-### Task 3: IndexedEx agent plugin repo + submodule
+### Task 2g: `bankr-ops` execution backend (optional install)
 
-**Repo:** `cyotee/indexedex-agent-skills` (plugin name `indexedex`).
+**Repo:** `cyotee/bankr-ops` — **not** the full BankrBot skills dump.
+
+- Skills: auth/key setup, portfolio/read, sign/submit, swap/transfer **only as backend primitives**.
+- No Polymarket/games/token-launch clutter.
+- Protocol `*-ops` may say: “If using Bankr backend, submit calldata via `bankr-ops`; if using Foundry, use `cast send` above.”
+- Agents install **either** `foundry-agent` **or** `bankr-ops` (or both only if they truly need both).
+
+### Task 2h: Multi-harness packaging for `defi-agent-skills`
+
+- Port/adapt `scripts/generate-codex-marketplace.py` (or submodule shared tooling) for Codex dual-ship.
+- OpenCode: install script or document bridge (mirror `cyotee-claude-plugins`).
+- README install sections for Claude, Grok, Codex, OpenCode.
+- CI check: `--check` on generated Codex artifacts when present.
+
+### Task 3: IndexedEx ops plugin repo + submodule
+
+**Repo:** `cyotee/indexedex-ops` (plugin name `indexedex-ops`).
 
 **Skills (v1):**
 
@@ -377,9 +405,11 @@ git commit -m "feat: add defi-primitives skills as submodule"
 **Sources of truth (read-only for authors):**  
 `daosys/lib/indexedex/contracts/interfaces/*`, `deployments/*`, `AGENTS.md` user-route rules.
 
+**Addresses:** Vendor testnet **and** mainnet/Base mainnet tables **only when real deployment artifacts exist**. Skills must fail closed if a chain table is missing.
+
 **Exclude from this plugin:** `indexedex-testing`, adversarial testing, script orchestration for deploy engineers, crane.
 
-- [ ] **Step 1: Create repo + MVP skills**
+- [ ] **Step 1: Create `cyotee/indexedex-ops` + MVP skills**
 - [ ] **Step 2: Submodule into `defi-agent-skills` only**
 - [ ] **Step 3: Optional later** — submodule into developer marketplace if maintainers want one install path (not required for campaign)
 
@@ -403,7 +433,7 @@ Not blocking for agent marketplace launch.
 ```bash
 # defi-agent-skills: zero architecture protocol names
 jq -r '.plugins[].name' .claude-plugin/marketplace.json
-# expect only: foundry-agent, defi-primitives, permit2-ops, *-ops, indexedex
+# expect only: foundry-agent, bankr-ops (optional), defi-primitives, *-ops, indexedex-ops
 ```
 
 - [ ] **Step 2: Submodule status clean**
@@ -413,7 +443,7 @@ git submodule status
 ./scripts/check-skills.sh
 ```
 
-- [ ] **Step 3: Smoke read-only cast** on testnet for registry + one ERC20 path.
+- [ ] **Step 3: Smoke read-only cast** on testnet for registry + one ERC20 path; multi-harness install dry-run (Claude catalog + Codex check + OpenCode path).
 
 - [ ] **Step 4: Push all new remotes + both marketplaces; bump `projects-defi` submodule pointers**
 
@@ -433,9 +463,9 @@ git commit -m "chore: pin marketplaces after foundry split and agent catalog"
 
 | Phase | Work | Outcome |
 |-------|------|---------|
-| **P0** | Task 0 policy + Task 1 foundry **split** + both marketplaces updated | Shared cast SoT; agent marketplace starts clean |
-| **P1** | Task 2a–2c primitives, permit2-ops, balancer-v3-ops as submodules | Dependencies for IndexedEx |
-| **P2** | Task 3 indexedex-agent-skills submodule | Launch catalog |
+| **P0** | Task 0 policy + Task 1 foundry **split** + both marketplaces + Task 2h multi-harness skeleton | Shared cast SoT; clean agent catalog; Claude/Grok/Codex/OpenCode install paths |
+| **P1** | Task 2a–2c primitives, permit2-ops, balancer-v3-ops; Task 2g bankr-ops thin backend | Dependencies for IndexedEx; backends split |
+| **P2** | Task 3 `indexedex-ops` submodule | Launch catalog |
 | **P3** | Task 2d–2f remaining protocol ops | Full agent DeFi surface |
 | **P4** | Task 5 QA/publish + optional Task 4 extracts | Production pins |
 
@@ -456,21 +486,19 @@ git commit -m "chore: pin marketplaces after foundry split and agent catalog"
 ## Relationship diagram (submodules)
 
 ```text
-                    cyotee/foundry-agent-skills  ◄── submodule ──┐
-                    cyotee/defi-primitives-skills◄── submodule ──┤
+                    cyotee/foundry-agent-skills  ◄── submodule (both marketplaces)
+                    cyotee/bankr-ops             ◄── submodule (agent mkt; optional)
+                    cyotee/defi-primitives-ops   ◄── submodule ──┐
                     cyotee/permit2-ops           ◄── submodule ──┤
                     cyotee/aave-v3-ops           ◄── submodule ──┼── defi-agent-skills
                     cyotee/uniswap-v3-ops        ◄── submodule ──┤
                     cyotee/balancer-v3-ops       ◄── submodule ──┤
                     cyotee/aerodrome-ops         ◄── submodule ──┤
-                    cyotee/indexedex-agent-skills◄── submodule ──┘
+                    cyotee/indexedex-ops         ◄── submodule ──┘
 
-cyotee/foundry-skills ── submodule ──► cyotee-claude-plugins only (dev)
+cyotee/foundry-skills ── submodule ──► cyotee-claude-plugins only (dev test/deploy)
 cyotee/aave-v3-skill  ── submodule ──► cyotee-claude-plugins only (architecture)
 …other architecture plugins…
-
-cyotee/foundry-agent-skills may also be submodule'd into cyotee-claude-plugins
-so developers keep cast without reinstalling a second marketplace.
 ```
 
 ---
@@ -482,21 +510,24 @@ so developers keep cast without reinstalling a second marketplace.
 | Existing skills as submodules / single SoT | Submodule composition model; Task 1–3 |
 | Agent marketplace uncluttered | Audience tags; exclusion list; no architecture submodules |
 | Mingled skills → split + update existing marketplace | Foundry split Task 1; mingle rule in Global Constraints |
-| Interaction via Foundry RPC | foundry-agent skills + all *-ops cast runbooks |
-| IndexedEx for campaign | Task 3 |
+| Interaction via Foundry RPC | foundry-agent + *-ops cast runbooks |
+| Backend split (Foundry vs Bankr) | foundry-agent vs bankr-ops; locked decisions |
+| Multi-harness Claude/Grok/Codex/OpenCode | Task 2h |
+| IndexedEx for campaign | Task 3 (`indexedex-ops`) |
 | Drift later allowed | Global Constraints + PLUGIN_CATALOG pin notes |
 
 ---
 
 ## Execution handoff
 
-Plan updated for **submodule composition + split-on-mingle**.
+Requirements locked. Plan covers submodule composition, split-on-mingle, multi-harness, and split execution backends.
 
-**Suggested first execution block:** Task 0 (policy in this repo) → Task 1 (foundry split across three GitHub repos + both marketplaces).
+**Suggested first execution block:** Task 0 (policy) → Task 1 (foundry split) → Task 2h (multi-harness skeleton).
 
 **Two execution options:**
 
 1. **Subagent-Driven (recommended)** — one repo/marketplace change per subagent with review  
 2. **Inline Execution** — P0 then P1–P2 in this session  
+
 
 **Which approach?**
