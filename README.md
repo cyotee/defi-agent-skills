@@ -2,6 +2,8 @@
 
 **AI-agent marketplace** for **DeFi protocol interaction** — curated so agents only load skills needed to operate on-chain, not architecture or test-framework noise.
 
+**Status:** testnet-first / public preview. IndexedEx and many runbooks target **Base Sepolia** (or documented networks) until mainnet artifacts are published. Prefer dry-run / read paths before any value-bearing `cast send`.
+
 Plugins are **git submodules** of independent repos (shared SoT with other marketplaces; pins may drift intentionally).
 
 ## Who should use this
@@ -9,7 +11,10 @@ Plugins are **git submodules** of independent repos (shared SoT with other marke
 | Audience | Marketplace |
 |----------|-------------|
 | Agents calling DeFi / RPCs | **This repo** |
-| Developers writing/testing contracts | [cyotee-claude-plugins](https://github.com/cyotee/cyotee-claude-plugins) |
+| Developers writing/testing contracts (incl. Crane) | [cyotee-claude-plugins](https://github.com/cyotee/cyotee-claude-plugins) |
+| Crane framework source & docs | [cyotee/crane](https://github.com/cyotee/crane) · [docs](https://cyotee.github.io/crane/) |
+
+> **Disclaimer:** Ops skills describe third-party protocols for agent automation. They are **not** official products of Aave, Uniswap, Balancer, or other protocol teams.
 
 ## Installation
 
@@ -83,9 +88,12 @@ AGENTS.md
 
 ## Related
 
-- Plan: [docs/superpowers/plans/2026-07-18-defi-agent-skills-marketplace.md](docs/superpowers/plans/2026-07-18-defi-agent-skills-marketplace.md)
-- Developer marketplace: [cyotee-claude-plugins](https://github.com/cyotee/cyotee-claude-plugins)
+| Resource | Link |
+|----------|------|
+| Developer marketplace | [cyotee-claude-plugins](https://github.com/cyotee/cyotee-claude-plugins) |
+| Crane (Diamond framework) | [github.com/cyotee/crane](https://github.com/cyotee/crane) · [docs](https://cyotee.github.io/crane/) |
+| Plugin catalog policy | [docs/PLUGIN_CATALOG.md](docs/PLUGIN_CATALOG.md) |
 
 ## License
 
-MIT (unless noted otherwise in individual plugins)
+MIT — see [LICENSE](LICENSE). Individual plugins may note additional terms in their manifests.
